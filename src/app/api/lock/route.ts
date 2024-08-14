@@ -6,7 +6,7 @@ import CryptoJS from "crypto-js";
 // Custom alphabet for generating slugs (using nanoid)
 const alphabet =
 	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-const nanoid = customAlphabet(alphabet, 10); // 10-character slug
+const nanoid = customAlphabet(alphabet, 12); // 12-character slug
 
 export async function POST(req: NextRequest) {
 	const { message, availableAt } = await req.json();
@@ -17,10 +17,11 @@ export async function POST(req: NextRequest) {
 		publicKey
 	).toString();
 
-	// Generate a unique slug
-	let slug: string;
+	// Initialize the slug variable
+	let slug = "";
 	let isUnique = false;
 
+	// Generate a unique slug
 	while (!isUnique) {
 		slug = nanoid();
 		const existingSlug = await prisma.publicMessage.findUnique({
