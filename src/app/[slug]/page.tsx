@@ -34,7 +34,11 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 				).toLocaleString();
 				setAvailableAt(localAvailableAt);
 			} catch (error) {
-				setError(error.message);
+				if (error instanceof Error) {
+					setError(error.message);
+				} else {
+					setError("An unexpected error occurred");
+				}
 				console.error("Error fetching message:", error);
 			} finally {
 				setLoading(false);
