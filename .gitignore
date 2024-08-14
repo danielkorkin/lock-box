@@ -35,3 +35,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma
+/prisma/migrations/ # exclude migrations directory if you don't want to share them
+/prisma/.env        # local environment variables for Prisma
