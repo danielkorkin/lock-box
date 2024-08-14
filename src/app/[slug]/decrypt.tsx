@@ -6,27 +6,33 @@ import CryptoJS from "crypto-js";
 
 export default function Decrypt({ slug }: { slug: string }) {
 	const [decryptedMessage, setDecryptedMessage] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const handleDecrypt = async () => {
-		const res = await fetch("/api/unlock", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ slug }),
-		});
+		setLoading(true);
+		try {
+			const res = await fetch("/api/unlock", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ slug }),
+			});
 
-		if (res.status === 403) {
-			alert("The message is not available yet.");
-			return;
+			if (res.status === 403) {
+				alert("The message is not available yet.");
+				return;
+			}
+
+			const data = await res.json();
+			const encryptedMessage =
+				document.querySelector("pre")?.textContent || "";
+			const decrypted = CryptoJS.AES.decrypt(
+				encryptedMessage,
+				data.key
+			).toString(CryptoJS.enc.Utf8);
+			setDecryptedMessage(decrypted);
+		} finally {
+			setLoading(false);
 		}
-
-		const data = await res.json();
-		const encryptedMessage =
-			document.querySelector("pre")?.textContent || "";
-		const decrypted = CryptoJS.AES.decrypt(
-			encryptedMessage,
-			data.key
-		).toString(CryptoJS.enc.Utf8);
-		setDecryptedMessage(decrypted);
 	};
 
 	return (
@@ -38,10 +44,13 @@ export default function Decrypt({ slug }: { slug: string }) {
 				</div>
 			) : (
 				<button
-					className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+					className={`mt-4 bg-green-500 text-white px-4 py-2 rounded ${
+						loading ? "opacity-50 cursor-not-allowed" : ""
+					}`}
 					onClick={handleDecrypt}
+					disabled={loading}
 				>
-					Decrypt Message
+					{loading ? "Decrypting..." : "Decrypt Message"}
 				</button>
 			)}
 		</>

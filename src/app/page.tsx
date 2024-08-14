@@ -7,17 +7,23 @@ import { useRouter } from "next/navigation";
 export default function HomePage() {
 	const [message, setMessage] = useState("");
 	const [availableAt, setAvailableAt] = useState("");
+	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 
 	const handleLock = async () => {
-		const response = await fetch("/api/lock", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ message, availableAt }),
-		});
-		const data = await response.json();
-		if (data.slug) {
-			router.push(`/${data.slug}`);
+		setLoading(true);
+		try {
+			const response = await fetch("/api/lock", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ message, availableAt }),
+			});
+			const data = await response.json();
+			if (data.slug) {
+				router.push(`/${data.slug}`);
+			}
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -29,18 +35,23 @@ export default function HomePage() {
 				placeholder="Enter your message..."
 				value={message}
 				onChange={(e) => setMessage(e.target.value)}
+				disabled={loading}
 			/>
 			<input
 				type="datetime-local"
 				className="w-full p-2 border rounded mb-4"
 				value={availableAt}
 				onChange={(e) => setAvailableAt(e.target.value)}
+				disabled={loading}
 			/>
 			<button
-				className="bg-blue-500 text-white px-4 py-2 rounded"
+				className={`bg-blue-500 text-white px-4 py-2 rounded ${
+					loading ? "opacity-50 cursor-not-allowed" : ""
+				}`}
 				onClick={handleLock}
+				disabled={loading}
 			>
-				Lock it
+				{loading ? "Locking..." : "Lock it"}
 			</button>
 		</div>
 	);

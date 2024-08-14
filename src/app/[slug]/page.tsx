@@ -1,3 +1,4 @@
+// src/app/[slug]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,6 +9,7 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 	const [message, setMessage] = useState("");
 	const [availableAt, setAvailableAt] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchMessage = async () => {
@@ -29,6 +31,8 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 			} catch (error) {
 				setError(error.message);
 				console.error("Error fetching message:", error);
+			} finally {
+				setLoading(false);
 			}
 		};
 
@@ -38,7 +42,9 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 	return (
 		<div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md">
 			<h1 className="text-2xl font-bold mb-4">Encrypted Message</h1>
-			{error ? (
+			{loading ? (
+				<p>Loading...</p>
+			) : error ? (
 				<p className="text-red-500">{error}</p>
 			) : (
 				<>
