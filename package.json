@@ -13,6 +13,7 @@
 		"@prisma/client": "^5.18.0",
 		"@supabase/supabase-js": "^2.45.1",
 		"crypto-js": "^4.2.0",
+		"nanoid": "^5.0.7",
 		"next": "14.2.5",
 		"react": "^18",
 		"react-countdown": "^2.3.6",
