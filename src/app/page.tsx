@@ -1,4 +1,4 @@
-// app/page.tsx
+// src/app/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -13,10 +13,13 @@ export default function HomePage() {
 	const handleLock = async () => {
 		setLoading(true);
 		try {
+			// Convert local time to UTC
+			const utcAvailableAt = new Date(availableAt).toISOString();
+
 			const response = await fetch("/api/lock", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ message, availableAt }),
+				body: JSON.stringify({ message, availableAt: utcAvailableAt }),
 			});
 			const data = await response.json();
 			if (data.slug) {

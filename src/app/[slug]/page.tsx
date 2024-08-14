@@ -27,7 +27,12 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 				}
 
 				setMessage(data.encryptedMessage);
-				setAvailableAt(data.availableAt);
+
+				// Convert UTC time to local time for display
+				const localAvailableAt = new Date(
+					data.availableAt
+				).toLocaleString();
+				setAvailableAt(localAvailableAt);
 			} catch (error) {
 				setError(error.message);
 				console.error("Error fetching message:", error);
