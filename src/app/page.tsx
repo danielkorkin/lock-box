@@ -1,49 +1,47 @@
-// app/[slug]/decrypt.tsx
+// app/page.tsx
 "use client";
 
 import { useState } from "react";
-import CryptoJS from "crypto-js";
+import { useRouter } from "next/navigation";
 
-export default function Decrypt({ slug }: { slug: string }) {
-	const [decryptedMessage, setDecryptedMessage] = useState("");
+export default function HomePage() {
+	const [message, setMessage] = useState("");
+	const [availableAt, setAvailableAt] = useState("");
+	const router = useRouter();
 
-	const handleDecrypt = async () => {
-		const res = await fetch("/api/unlock", {
+	const handleLock = async () => {
+		const response = await fetch("/api/lock", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ slug }),
+			body: JSON.stringify({ message, availableAt }),
 		});
-
-		if (res.status === 403) {
-			alert("The message is not available yet.");
-			return;
+		const data = await response.json();
+		if (data.slug) {
+			router.push(`/${data.slug}`);
 		}
-
-		const data = await res.json();
-		const encryptedMessage =
-			document.querySelector("pre")?.textContent || "";
-		const decrypted = CryptoJS.AES.decrypt(
-			encryptedMessage,
-			data.key
-		).toString(CryptoJS.enc.Utf8);
-		setDecryptedMessage(decrypted);
 	};
 
 	return (
-		<>
-			{decryptedMessage ? (
-				<div className="mt-4 p-4 bg-green-100 rounded">
-					<h2 className="text-xl font-bold">Decrypted Message</h2>
-					<p>{decryptedMessage}</p>
-				</div>
-			) : (
-				<button
-					className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-					onClick={handleDecrypt}
-				>
-					Decrypt Message
-				</button>
-			)}
-		</>
+		<div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md">
+			<h1 className="text-2xl font-bold mb-4">Lock Box</h1>
+			<textarea
+				className="w-full p-2 border rounded mb-4"
+				placeholder="Enter your message..."
+				value={message}
+				onChange={(e) => setMessage(e.target.value)}
+			/>
+			<input
+				type="datetime-local"
+				className="w-full p-2 border rounded mb-4"
+				value={availableAt}
+				onChange={(e) => setAvailableAt(e.target.value)}
+			/>
+			<button
+				className="bg-blue-500 text-white px-4 py-2 rounded"
+				onClick={handleLock}
+			>
+				Lock it
+			</button>
+		</div>
 	);
 }
