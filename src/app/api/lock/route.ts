@@ -1,18 +1,35 @@
-// app/api/lock/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../lib/prisma";
-import { v4 as uuidv4 } from "uuid";
+import { prisma } from "@/lib/prisma";
+import { customAlphabet } from "nanoid";
 import CryptoJS from "crypto-js";
+
+// Custom alphabet for generating slugs (using nanoid)
+const alphabet =
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const nanoid = customAlphabet(alphabet, 10); // 10-character slug
 
 export async function POST(req: NextRequest) {
 	const { message, availableAt } = await req.json();
 
-	const slug = uuidv4();
-	const publicKey = uuidv4();
+	const publicKey = nanoid();
 	const encryptedMessage = CryptoJS.AES.encrypt(
 		message,
 		publicKey
 	).toString();
+
+	// Generate a unique slug
+	let slug: string;
+	let isUnique = false;
+
+	while (!isUnique) {
+		slug = nanoid();
+		const existingSlug = await prisma.publicMessage.findUnique({
+			where: { slug },
+		});
+		if (!existingSlug) {
+			isUnique = true;
+		}
+	}
 
 	await prisma.publicMessage.create({
 		data: {
