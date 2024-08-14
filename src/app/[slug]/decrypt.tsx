@@ -38,7 +38,7 @@ export default function Decrypt({ slug }: { slug: string }) {
 	return (
 		<>
 			{decryptedMessage ? (
-				<div className="mt-4 p-4 bg-green-100 rounded">
+				<div className="mt-4 p-4 bg-green-100 rounded max-h-96 overflow-y-auto whitespace-pre-wrap break-words">
 					<h2 className="text-xl font-bold">Decrypted Message</h2>
 					<p>{decryptedMessage}</p>
 				</div>

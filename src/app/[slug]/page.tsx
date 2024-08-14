@@ -58,7 +58,9 @@ export default function MessagePage({ params }: { params: { slug: string } }) {
 			) : (
 				<>
 					<p className="mb-4">The message is currently locked.</p>
-					<pre className="bg-gray-100 p-2 rounded">{message}</pre>
+					<pre className="bg-gray-100 p-2 rounded overflow-x-auto whitespace-pre-wrap break-words max-h-96">
+						{message}
+					</pre>
 					<Countdown availableAt={availableAt} />
 					<Decrypt slug={params.slug} />
 				</>
